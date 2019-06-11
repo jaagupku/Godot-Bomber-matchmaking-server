@@ -3,10 +3,13 @@ extends Node
 #const SERVER_IP = "52.178.92.96" # Change this to your own Server IP
 #const PORT = 80
 
-const SERVER_IP = "40.121.198.16"
+const SERVER_IP = "52.169.108.42"
 const PORT = 3456
+var upnp_port = 3455 + randi() % 10000
+
 
 onready var udp = PacketPeerUDP.new()
+onready var upnp:UPNP = UPNP.new()
 onready var player_name = "Godotchan"
 onready var searching_match = false
 
@@ -26,7 +29,14 @@ signal match_found
 
 func start_connection():
 	print("Start connection")
-	
+	upnp.discover()
+	var upnp_result = upnp.add_port_mapping(upnp_port)
+	if upnp_result != UPNP.UPNP_RESULT_SUCCESS:
+		print("UPNP Error ",upnp_result)
+		upnp_port += 1
+		upnp_result = upnp.add_port_mapping(upnp_port, PORT)
+		if upnp_result != UPNP.UPNP_RESULT_SUCCESS:
+			print("UPNP Error ",upnp_result)
 	udp.listen(3456)
 	udp.set_dest_address(SERVER_IP, PORT)
 	

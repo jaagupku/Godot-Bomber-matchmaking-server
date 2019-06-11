@@ -1,6 +1,6 @@
 extends Node
 
-const server_ip = "40.121.198.16" # Change this to your server IP
+const server_ip = "52.169.108.42" # Change this to your server IP
 const server_port = 3456
 
 onready var server_connection = StreamPeerTCP.new()

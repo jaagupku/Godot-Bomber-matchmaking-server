@@ -52,7 +52,11 @@ func _process(delta):
 		if(player_udp.is_listening() and player_udp.get_available_packet_count() > 0):
 			var response = player_udp.get_packet().get_string_from_utf8()
 			print(response)
-			
+			var response_port = player_udp.get_packet_port()
+			if response_port != serverudp.other_remote_port:
+				player_udp.set_dest_address(serverudp.other_remote_ip, response_port)
+				print("Other is behind strict NAT, new port: ", response_port)
+				serverudp.other_remote_port = response_port
 			if (response == "ping"): # trying to connect
 				player_response = "pong"
 			elif (response == "pong" and serverudp.is_master == 0): # i reached it!)
@@ -68,6 +72,7 @@ func _on_match_found():
 	$connect/error_label.text = "Connecting to player..."
 	set_process(true)
 	player_udp.listen(3456)
+	print("Connecting to " + serverudp.other_remote_ip + ":" + str(serverudp.other_remote_port))
 	player_udp.set_dest_address(serverudp.other_remote_ip, serverudp.other_remote_port)
 	if(serverudp.is_master == 0):
 		print("Is master!")
@@ -104,3 +109,9 @@ func _on_search_pressed():
 	
 	serverudp.player_name = $connect/name.text
 	serverudp.start_connection()
+
+
+func _notification(what):
+	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
+		serverudp.upnp.delete_port_mapping(serverudp.upnp_port)
+		print("deleted")

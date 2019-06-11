@@ -41,6 +41,7 @@ func _player_disconnected(id):
 # Callback from SceneTree, only for clients (not server)
 func _connected_ok():
 	# Registration of a client beings here, tell everyone that we are here
+	print("client connected")
 	rpc("register_player", get_tree().get_network_unique_id(), player_name)
 	rpc("begin_game")
 	emit_signal("connection_succeeded")

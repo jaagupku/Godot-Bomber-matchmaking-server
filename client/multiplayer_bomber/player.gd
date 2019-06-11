@@ -12,7 +12,7 @@ sync func setup_bomb(name, pos, by_who):
 	var bomb = preload("res://bomb.tscn").instance()
 	bomb.set_name(name) # Ensure unique name for the bomb
 	bomb.position=pos
-	bomb.owner = by_who
+	bomb.by_who = by_who
 	# No need to set network mode to bomb, will be owned by master by default
 	get_node("../..").add_child(bomb)
 
